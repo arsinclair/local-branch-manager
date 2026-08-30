@@ -1,0 +1,10 @@
+.git/**
+.agents/**
+.codex/**
+.gitignore
+.vscode/**
+src/**
+tsconfig.json
+node_modules/@types/**
+node_modules/typescript/**
+**/*.map

@@ -1,0 +1,88 @@
+{
+    "name": "local-branch-manager",
+    "displayName": "Local Branch Manager",
+    "version": "0.1.0",
+    "description": "View and safely delete local Git branches from Source Control.",
+    "categories": [
+        "SCM Providers"
+    ],
+    "license": "GPL-3.0-only",
+    "author": "Raman Sinclair",
+    "publisher": "RamanSinclair",
+    "repository": {
+        "url": "git@github.com:arsinclair/local-branch-manager.git",
+        "type": "git"
+    },
+    "main": "./out/extension.js",
+    "scripts": {
+        "vscode:prepublish": "pnpm compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "check": "tsc -p ./ --noEmit",
+        "format": "oxfmt",
+        "format:check": "oxfmt --check",
+        "lint": "oxlint",
+        "lint:fix": "oxlint --fix",
+        "package": "pnpm dlx @vscode/vsce package"
+    },
+    "devDependencies": {
+        "@types/node": "^22.0.0",
+        "@types/vscode": "^1.90.0",
+        "@typescript/native": "npm:typescript@^7.0.2",
+        "oxfmt": "^0.62.0",
+        "oxlint": "^1.76.0",
+        "oxlint-tsgolint": "^7.0.2001",
+        "typescript": "npm:@typescript/typescript6@^6.0.2"
+    },
+    "contributes": {
+        "views": {
+            "scm": [
+                {
+                    "id": "localBranchManager.branches",
+                    "name": "Local Branches",
+                    "contextualTitle": "Local Branch Manager",
+                    "icon": "resources/branches.png",
+                    "visibility": "visible"
+                }
+            ]
+        },
+        "commands": [
+            {
+                "command": "localBranchManager.refresh",
+                "title": "Refresh Local Branches",
+                "icon": "$(refresh)"
+            },
+            {
+                "command": "localBranchManager.deleteBranch",
+                "title": "Delete Local Branch",
+                "icon": "$(trash)"
+            }
+        ],
+        "menus": {
+            "view/title": [
+                {
+                    "command": "localBranchManager.refresh",
+                    "when": "view == localBranchManager.branches",
+                    "group": "navigation"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "localBranchManager.deleteBranch",
+                    "when": "view == localBranchManager.branches && viewItem == localBranchManager.deletableBranch",
+                    "group": "inline"
+                }
+            ],
+            "commandPalette": [
+                {
+                    "command": "localBranchManager.deleteBranch",
+                    "when": "false"
+                }
+            ]
+        }
+    },
+    "engines": {
+        "vscode": "^1.90.0"
+    },
+    "packageManager": "pnpm@11.24.0"
+}
