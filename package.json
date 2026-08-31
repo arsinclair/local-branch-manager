@@ -1,7 +1,7 @@
 {
     "name": "local-branch-manager",
     "displayName": "Local Branch Manager",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "View and safely delete local Git branches from Source Control.",
     "categories": [
         "SCM Providers"

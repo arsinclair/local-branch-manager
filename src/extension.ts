@@ -35,6 +35,21 @@ export function activate(context: vscode.ExtensionContext): void {
                         return;
                     }
 
+                    if (item.merged) {
+                        try {
+                            await deleteLocalBranch(item.repository, item.branchName, true);
+                        } catch (forceError) {
+                            void vscode.window.showErrorMessage(getGitErrorMessage(forceError));
+                            return;
+                        }
+                        provider.refresh();
+                        vscode.window.setStatusBarMessage(
+                            `Deleted local branch ${item.branchName}`,
+                            3000
+                        );
+                        return;
+                    }
+
                     const forceChoice = await vscode.window.showWarningMessage(
                         `Branch “${item.branchName}” is not fully merged. Force delete it?`,
                         {

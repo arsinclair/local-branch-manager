@@ -36,8 +36,8 @@ export class BranchItem extends vscode.TreeItem {
         this.tooltip = current
             ? `${branchName} (currently checked out)`
             : merged
-              ? `${branchName} (merged into HEAD)`
-              : `${branchName} (not merged into HEAD)`;
+              ? `${branchName} (merged or patch-equivalent to HEAD)`
+              : `${branchName} (contains changes not applied to HEAD)`;
     }
 }
 

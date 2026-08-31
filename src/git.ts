@@ -24,6 +24,33 @@ async function runGit(cwd: string, args: readonly string[]): Promise<string> {
     return stdout.trimEnd();
 }
 
+async function findBranchesWithUniquePatches(
+    repository: string,
+    branches: readonly string[]
+): Promise<ReadonlySet<string>> {
+    const queue = [...branches];
+    const branchesWithUniquePatches = new Set<string>();
+    const workerCount = Math.min(8, queue.length);
+
+    async function checkBranches(): Promise<void> {
+        let branch: string | undefined;
+        while ((branch = queue.pop()) !== undefined) {
+            try {
+                const output = await runGit(repository, ["cherry", "HEAD", branch]);
+                if (output.split("\n").some((line) => line.startsWith("+ "))) {
+                    branchesWithUniquePatches.add(branch);
+                }
+            } catch {
+                // Be conservative when patch equivalence cannot be determined.
+                branchesWithUniquePatches.add(branch);
+            }
+        }
+    }
+
+    await Promise.all(Array.from({ length: workerCount }, () => checkBranches()));
+    return branchesWithUniquePatches;
+}
+
 export async function findRepository(folder: string): Promise<string | undefined> {
     try {
         return await runGit(folder, ["rev-parse", "--show-toplevel"]);
@@ -49,7 +76,11 @@ export async function getLocalBranches(repository: string): Promise<readonly Git
         "--format=%(refname:short)",
         "refs/heads/"
     ]);
-    const unmergedBranches = new Set(unmergedOutput ? unmergedOutput.split("\n") : []);
+    const ancestryUnmergedBranches = unmergedOutput ? unmergedOutput.split("\n") : [];
+    const branchesWithUniquePatches = await findBranchesWithUniquePatches(
+        repository,
+        ancestryUnmergedBranches
+    );
 
     return output
         .split("\n")
@@ -58,7 +89,7 @@ export async function getLocalBranches(repository: string): Promise<readonly Git
             return {
                 name,
                 current: headMarker === "*",
-                merged: !unmergedBranches.has(name)
+                merged: !branchesWithUniquePatches.has(name)
             };
         })
         .sort((left, right) => {
