@@ -15,6 +15,10 @@ export function activate(context: vscode.ExtensionContext): void {
 
     context.subscriptions.push(
         view,
+        vscode.commands.registerCommand("localBranchManager.showBranches", async () => {
+            await vscode.commands.executeCommand("workbench.view.scm");
+            await vscode.commands.executeCommand(`${VIEW_ID}.focus`);
+        }),
         vscode.commands.registerCommand("localBranchManager.refresh", () => provider.refresh()),
         vscode.commands.registerCommand(
             "localBranchManager.deleteBranch",

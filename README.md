@@ -10,8 +10,11 @@ A small VS Code extension that lists local Git branches in the **Source Control*
 - Offers force deletion only when Git reports that a branch is not fully merged.
 - Supports multi-root workspaces by grouping branches by repository.
 - Refreshes when the view is reopened, when workspace folders change, or when you click refresh.
+- Adds a Git branch button to the Source Control title bar that reveals the view if it is hidden.
 
 The currently checked-out branch is labeled `current` and cannot be deleted. Git also prevents deletion of a branch checked out in another worktree; its error is shown without modifying that worktree.
+
+If **Local Branches** is not visible, click the Git branch button in the Source Control title bar or run **Local Branch Manager: Show Local Branches** from the Command Palette. Delete buttons appear when you hover over branches that are not currently checked out.
 
 ## Run locally
 
