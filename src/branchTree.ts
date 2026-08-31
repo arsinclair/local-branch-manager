@@ -20,17 +20,24 @@ export class BranchItem extends vscode.TreeItem {
     public constructor(
         public readonly repository: string,
         public readonly branchName: string,
-        public readonly current: boolean
+        public readonly current: boolean,
+        public readonly merged: boolean
     ) {
         super(branchName, vscode.TreeItemCollapsibleState.None);
         this.contextValue = current
             ? "localBranchManager.currentBranch"
             : "localBranchManager.deletableBranch";
         this.description = current ? "current" : undefined;
-        this.iconPath = new vscode.ThemeIcon(current ? "check" : "git-branch");
+        this.iconPath = current
+            ? new vscode.ThemeIcon("check")
+            : merged
+              ? new vscode.ThemeIcon("git-branch")
+              : new vscode.ThemeIcon("circle-filled", new vscode.ThemeColor("charts.yellow"));
         this.tooltip = current
             ? `${branchName} (currently checked out)`
-            : `Delete local branch ${branchName}`;
+            : merged
+              ? `${branchName} (merged into HEAD)`
+              : `${branchName} (not merged into HEAD)`;
     }
 }
 
@@ -84,7 +91,8 @@ export class BranchTreeProvider implements vscode.TreeDataProvider<TreeNode> {
             const items = await Promise.all(
                 repositories.map(async (repository) => {
                     const branches = (await getLocalBranches(repository)).map(
-                        (branch) => new BranchItem(repository, branch.name, branch.current)
+                        (branch) =>
+                            new BranchItem(repository, branch.name, branch.current, branch.merged)
                     );
                     return new RepositoryItem(repository, branches);
                 })

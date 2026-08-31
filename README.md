@@ -6,6 +6,7 @@ A small VS Code extension that lists local Git branches in the **Source Control*
 
 - Lists all local branches, with the current branch first.
 - Adds an inline trash button to every other branch.
+- Marks branches that are not merged into the current `HEAD` with a yellow dot.
 - Uses Git's safe delete first (`git branch -d`).
 - Offers force deletion only when Git reports that a branch is not fully merged.
 - Supports multi-root workspaces by grouping branches by repository.

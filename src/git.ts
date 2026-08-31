@@ -6,6 +6,7 @@ const execFileAsync = promisify(execFile);
 export interface GitBranch {
     readonly name: string;
     readonly current: boolean;
+    readonly merged: boolean;
 }
 
 export interface GitRepository {
@@ -42,11 +43,23 @@ export async function getLocalBranches(repository: string): Promise<readonly Git
         return [];
     }
 
+    const unmergedOutput = await runGit(repository, [
+        "for-each-ref",
+        "--no-merged=HEAD",
+        "--format=%(refname:short)",
+        "refs/heads/"
+    ]);
+    const unmergedBranches = new Set(unmergedOutput ? unmergedOutput.split("\n") : []);
+
     return output
         .split("\n")
         .map((line) => {
             const [name, headMarker] = line.split("\0");
-            return { name, current: headMarker === "*" };
+            return {
+                name,
+                current: headMarker === "*",
+                merged: !unmergedBranches.has(name)
+            };
         })
         .sort((left, right) => {
             if (left.current !== right.current) {

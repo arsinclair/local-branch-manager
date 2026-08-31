@@ -27,18 +27,6 @@ export function activate(context: vscode.ExtensionContext): void {
                     return;
                 }
 
-                const choice = await vscode.window.showWarningMessage(
-                    `Delete local branch “${item.branchName}”?`,
-                    {
-                        modal: true,
-                        detail: `Repository: ${item.repository}\n\nGit will refuse if the branch is not fully merged.`
-                    },
-                    "Delete"
-                );
-                if (choice !== "Delete") {
-                    return;
-                }
-
                 try {
                     await deleteLocalBranch(item.repository, item.branchName);
                 } catch (error) {
